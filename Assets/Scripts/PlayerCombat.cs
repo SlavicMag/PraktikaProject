@@ -4,7 +4,7 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private Transform attackPoint;
     [SerializeField] private Transform downAttackPoint;
-
+    [SerializeField] private Animator animator;
     [SerializeField] private float attackRange = 0.8f;
     [SerializeField] private int normalAttackDamage = 1;
     [SerializeField] private int downAttackDamage = 2;
@@ -12,6 +12,7 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
+  
         if (Input.GetMouseButtonDown(0))
         {
             if (Input.GetKey(KeyCode.S))
@@ -26,6 +27,10 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void NormalAttack()
+    {
+        animator.SetTrigger("Attack");
+    }
+    public void DealNormalAttackDamage()
     {
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             attackPoint.position,
@@ -46,6 +51,10 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void DownAttack()
+    {
+        animator.SetTrigger("DownAttack");
+    }
+    public void DealDownAttackDamage()
     {
         Collider2D[] hits = Physics2D.OverlapBoxAll(
             downAttackPoint.position,
