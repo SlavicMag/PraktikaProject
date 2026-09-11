@@ -2,16 +2,14 @@ using UnityEngine;
 
 public class PlayerRifle : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
     [SerializeField] private Transform riflePoint;
     [SerializeField] private GameObject bulletPrefab;
 
-    [SerializeField] private float bulletSpeed = 12f;
     [SerializeField] private float rifleCooldown = 5f;
 
     private float cooldownTimer = 0f;
 
-    void Update()
+    private void Update()
     {
         if (cooldownTimer > 0f)
         {
@@ -28,12 +26,6 @@ public class PlayerRifle : MonoBehaviour
     {
         cooldownTimer = rifleCooldown;
 
-        animator.SetTrigger("Mosin");
-        Debug.Log("Mosin triggered!");
-    }
-
-    public void FireBullet()
-    {
         float direction = transform.localScale.x > 0f ? 1f : -1f;
 
         GameObject bullet = Instantiate(
@@ -42,11 +34,11 @@ public class PlayerRifle : MonoBehaviour
             Quaternion.identity
         );
 
-        Rigidbody2D bulletRb = bullet.GetComponent<Rigidbody2D>();
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
 
-        bulletRb.velocity = new Vector2(
-            direction * bulletSpeed,
-            0f
-        );
+        if (bulletScript != null)
+        {
+            bulletScript.SetDirection(direction);
+        }
     }
 }
