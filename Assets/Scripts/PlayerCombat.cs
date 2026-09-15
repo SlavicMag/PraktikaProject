@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -73,6 +73,8 @@ public class PlayerCombat : MonoBehaviour
             enemyLayer
         );
 
+        bool hitEnemy = false;
+
         foreach (Collider2D hit in hits)
         {
             EnemyHealth enemyHealth = hit.GetComponent<EnemyHealth>();
@@ -82,8 +84,21 @@ public class PlayerCombat : MonoBehaviour
                 enemyHealth.TakeDamage(downAttackDamage);
 
                 ApplyKnockback(hit);
+
+                hitEnemy = true;
             }
         }
+
+        if (hitEnemy)
+        {
+            PlayerMovement movement = GetComponent<PlayerMovement>();
+
+            if (movement != null)
+            {
+                movement.BounceUp();
+            }
+        }
+
     }
 
     private void ApplyKnockback(Collider2D hit)

@@ -9,6 +9,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float groundCheckRadius = 0.1f;
+    [SerializeField] private float bounceForce = 10f;   
     private Rigidbody2D rb;
     private Animator animator;
 
@@ -44,6 +45,15 @@ public class PlayerMovement : MonoBehaviour
 
         }
     }
+
+    public void BounceUp()
+    {
+        if (rb == null) return;
+
+        rb.velocity = new Vector2(rb.velocity.x, bounceForce);
+    }
+
+
     private void OnDrawGizmosSelected()
     {
         if (groundCheck == null)

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyMelee : MonoBehaviour
 {
@@ -67,9 +67,12 @@ public class EnemyMelee : MonoBehaviour
     private bool hasLeftGround = false;
     private bool isKnockedBack = false;
 
+    private Animator animator;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
 
         FindPlayer();
     }
@@ -225,6 +228,9 @@ public class EnemyMelee : MonoBehaviour
         // =========================
 
         TryJump(grounded);
+
+        bool running = grounded && Mathf.Abs(rb.velocity.x) > 0.1f && !isJumping && !isKnockedBack;
+        animator.SetBool("isRunning", running);
     }
 
     private void MoveToPlayer()
@@ -578,6 +584,7 @@ public class EnemyMelee : MonoBehaviour
             jumpForce
         );
 
+        animator.SetTrigger("Jump");
         Debug.Log("Ближний враг прыгнул");
     }
 
@@ -628,14 +635,22 @@ public class EnemyMelee : MonoBehaviour
             return;
         }
 
-        playerHealth.TakeDamage(attackDamage);
-
-        Debug.Log(
-            "Ближний враг атаковал игрока"
-        );
-
+        animator.SetTrigger("Attack"); 
         attackTimer = attackCooldown;
     }
+
+    public void DealAttackDamage()
+    {
+        if (playerHealth == null || playerHealth.IsDead)
+        {
+            return;
+        }
+
+        playerHealth.TakeDamage(attackDamage);
+
+        Debug.Log("Ближний враг атаковал игрока");
+    }
+
 
     public void ApplyKnockback(
         float direction,
@@ -734,5 +749,21 @@ public class EnemyMelee : MonoBehaviour
                 end
             );
         }
+
+        Gizmos.color = new Color(1f, 0f, 0f, 0.35f);
+
+        Vector3 attackCenter = new Vector3(
+            transform.position.x,
+            transform.position.y,
+            0f
+        );
+
+        Vector3 attackSize = new Vector3(
+            attackDistance * 2f,
+            attackHeightDifference * 2f,
+            0f
+        );
+
+        Gizmos.DrawCube(attackCenter, attackSize);
     }
 }
