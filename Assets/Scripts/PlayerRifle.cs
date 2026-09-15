@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerRifle : MonoBehaviour
 {
@@ -8,6 +8,12 @@ public class PlayerRifle : MonoBehaviour
     [SerializeField] private float rifleCooldown = 5f;
 
     private float cooldownTimer = 0f;
+    private Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponentInChildren<Animator>();
+    }
 
     private void Update()
     {
@@ -18,11 +24,11 @@ public class PlayerRifle : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R) && cooldownTimer <= 0f)
         {
-            Shoot();
+            animator.SetTrigger("Mosin");
         }
     }
 
-    private void Shoot()
+    public void Shoot()
     {
         cooldownTimer = rifleCooldown;
 
