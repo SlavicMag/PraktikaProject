@@ -82,4 +82,22 @@ public class PrefabSpawner : MonoBehaviour
             Gizmos.DrawWireSphere(spawnPoint.position, 0.2f);
         }
     }
+
+    public void ResetSpawner()
+    {
+        for (int i = spawned.Count - 1; i >= 0; i--)
+        {
+            if (spawned[i] != null)
+            {
+                Destroy(spawned[i]);
+            }
+        }
+
+        spawned.Clear();
+
+        respawnTimer = 0f;
+        waitingToRespawn = false;
+
+        Spawn();
+    }
 }

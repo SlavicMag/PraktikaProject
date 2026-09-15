@@ -1,5 +1,6 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("Floating Text")]
     [SerializeField] private GameObject floatingCombatTextPrefab;
 
+    [Header("UI")]
+    [SerializeField] private TextMeshProUGUI healthText;
+
     private int currentHealth;
     private bool isDead = false;
     private bool isInvulnerable = false;
@@ -18,8 +22,16 @@ public class PlayerHealth : MonoBehaviour
     private void Start()
     {
         currentHealth = maxHealth;
+        UpdateHealthUI();
 
         Debug.Log("Здоровье игрока: " + currentHealth);
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (healthText == null) return;
+
+        healthText.text = "HP: " + currentHealth + " / " + maxHealth;
     }
 
     public void TakeDamage(int damage)
@@ -42,6 +54,8 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth = 0;
         }
+
+        UpdateHealthUI();
 
         ShowDamageText(damage);
 
@@ -74,6 +88,8 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
+
+        UpdateHealthUI();
 
         int actualHeal = currentHealth - oldHealth;
 
@@ -250,5 +266,59 @@ public class PlayerHealth : MonoBehaviour
         {
             collider.enabled = false;
         }
+    }
+
+    public void ResetHealth()
+    {
+        isDead = false;
+        isInvulnerable = false;
+        currentHealth = maxHealth;
+
+        UpdateHealthUI();
+
+        StopAllCoroutines();
+
+        int playerLayer = LayerMask.NameToLayer("Player");
+        int enemyLayer = LayerMask.NameToLayer("Enemy");
+
+        if (playerLayer != -1 && enemyLayer != -1)
+        {
+            Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        }
+
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+
+        if (rb != null)
+        {
+            rb.simulated = true;
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
+
+        foreach (MonoBehaviour script in scripts)
+        {
+            if (script != this)
+            {
+                script.enabled = true;
+            }
+        }
+
+        SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (SpriteRenderer sprite in sprites)
+        {
+            sprite.enabled = true;
+        }
+
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
+
+        foreach (Collider2D collider in colliders)
+        {
+            collider.enabled = true;
+        }
+
+        Debug.Log("Игрок возрождён. Здоровье: " + currentHealth);
     }
 }

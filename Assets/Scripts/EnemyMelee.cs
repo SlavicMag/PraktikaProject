@@ -646,6 +646,28 @@ public class EnemyMelee : MonoBehaviour
             return;
         }
 
+        if (player == null)
+        {
+            return;
+        }
+
+        float distanceX = Mathf.Abs(
+            player.position.x - transform.position.x
+        );
+
+        float distanceY = Mathf.Abs(
+            player.position.y - transform.position.y
+        );
+
+        float rangeMargin = 0.3f;
+
+        if (distanceX > attackDistance + rangeMargin ||
+            distanceY > attackHeightDifference + rangeMargin)
+        {
+            Debug.Log("Игрок увернулся от атаки");
+            return;
+        }
+
         playerHealth.TakeDamage(attackDamage);
 
         Debug.Log("Ближний враг атаковал игрока");
