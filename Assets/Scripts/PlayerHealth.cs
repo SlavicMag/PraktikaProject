@@ -36,13 +36,11 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        // Игрок уже мёртв
         if (isDead)
         {
             return;
         }
 
-        // Игрок временно неуязвим
         if (isInvulnerable)
         {
             return;
@@ -62,14 +60,12 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Игрок получил урон: " + damage);
         Debug.Log("Здоровье игрока: " + currentHealth);
 
-        // Если здоровье закончилось
         if (currentHealth <= 0)
         {
             Die();
             return;
         }
 
-        // Запускаем неуязвимость
         StartCoroutine(InvulnerabilityCoroutine());
     }
 
@@ -106,8 +102,6 @@ public class PlayerHealth : MonoBehaviour
     {
         isInvulnerable = true;
 
-        // Временно отключаем столкновение
-        // между Player и Enemy
         Physics2D.IgnoreLayerCollision(
             LayerMask.NameToLayer("Player"),
             LayerMask.NameToLayer("Enemy"),
@@ -120,7 +114,6 @@ public class PlayerHealth : MonoBehaviour
             invulnerabilityDuration
         );
 
-        // Возвращаем столкновение
         Physics2D.IgnoreLayerCollision(
             LayerMask.NameToLayer("Player"),
             LayerMask.NameToLayer("Enemy"),
@@ -214,10 +207,8 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true;
 
-        // На случай, если игрок умер во время i-frames
         StopAllCoroutines();
 
-        // Возвращаем столкновение с врагами
         Physics2D.IgnoreLayerCollision(
             LayerMask.NameToLayer("Player"),
             LayerMask.NameToLayer("Enemy"),
