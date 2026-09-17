@@ -135,10 +135,6 @@ public class EnemyMelee : MonoBehaviour
             return;
         }
 
-        // =========================
-        // ТАЙМЕРЫ
-        // =========================
-
         if (attackTimer > 0f)
         {
             attackTimer -= Time.deltaTime;
@@ -164,18 +160,10 @@ public class EnemyMelee : MonoBehaviour
             failedJumpTimer -= Time.deltaTime;
         }
 
-        // =========================
-        // ОТБРАСЫВАНИЕ
-        // =========================
-
         if (isKnockedBack)
         {
             return;
         }
-
-        // =========================
-        // ПРОВЕРКА ЗЕМЛИ
-        // =========================
 
         bool grounded = IsGrounded();
 
@@ -192,10 +180,6 @@ public class EnemyMelee : MonoBehaviour
 
         FacePlayer();
 
-        // =========================
-        // РАССТОЯНИЕ ДО ИГРОКА
-        // =========================
-
         float distanceX = Mathf.Abs(
             player.position.x - transform.position.x
         );
@@ -203,10 +187,6 @@ public class EnemyMelee : MonoBehaviour
         float distanceY = Mathf.Abs(
             player.position.y - transform.position.y
         );
-
-        // =========================
-        // АТАКА
-        // =========================
 
         bool canAttack =
             grounded &&
@@ -222,10 +202,6 @@ public class EnemyMelee : MonoBehaviour
         {
             MoveToPlayer();
         }
-
-        // =========================
-        // ПРЫЖОК
-        // =========================
 
         TryJump(grounded);
 
@@ -279,19 +255,11 @@ public class EnemyMelee : MonoBehaviour
             ? 1f
             : -1f;
 
-        // =========================
-        // 1. СТЕНА
-        // =========================
-
         if (HasObstacle(direction))
         {
             Jump();
             return;
         }
-
-        // =========================
-        // 2. УМНЫЙ ПОИСК ПЛАТФОРМЫ
-        // =========================
 
         Collider2D platform = FindReachablePlatform(
             direction,
@@ -342,9 +310,6 @@ public class EnemyMelee : MonoBehaviour
 
         float enemyFeetY = GetFeetY();
 
-        /*
-         * Проверяем несколько точек впереди.
-         */
         int rayCount = 9;
 
         Collider2D bestPlatform = null;
@@ -367,9 +332,6 @@ public class EnemyMelee : MonoBehaviour
                 direction *
                 (platformCheckDistance + offset);
 
-            /*
-             * Начинаем высоко над врагом.
-             */
             Vector2 rayStart = new Vector2(
                 rayX,
                 enemyFeetY + maxPlatformHeight
@@ -392,11 +354,6 @@ public class EnemyMelee : MonoBehaviour
                 float height =
                     hit.point.y - enemyFeetY;
 
-                /*
-                 * Игнорируем:
-                 * - землю на том же уровне;
-                 * - слишком высокие платформы.
-                 */
                 if (height < minPlatformHeight)
                 {
                     continue;
@@ -407,10 +364,6 @@ public class EnemyMelee : MonoBehaviour
                     continue;
                 }
 
-                /*
-                 * Берём ближайшую по высоте
-                 * подходящую поверхность.
-                 */
                 if (height < bestHeight)
                 {
                     bestHeight = height;
@@ -449,9 +402,6 @@ public class EnemyMelee : MonoBehaviour
             return false;
         }
 
-        /*
-         * Получаем гравитацию Rigidbody2D.
-         */
         float gravity =
             Mathf.Abs(
                 Physics2D.gravity.y *
@@ -463,89 +413,45 @@ public class EnemyMelee : MonoBehaviour
             return false;
         }
 
-        /*
-         * Проверяем, способен ли прыжок вообще
-         * достичь этой высоты.
-         *
-         * Формула:
-         *
-         * v² = v0² - 2gh
-         */
         float velocitySquared =
             jumpForce * jumpForce -
             2f * gravity * heightDifference;
 
         if (velocitySquared < 0f)
         {
-            /*
-             * Платформа слишком высоко.
-             */
             return false;
         }
 
-        /*
-         * Время, за которое враг достигает
-         * платформы на ВОСХОДЯЩЕЙ траектории.
-         */
         float sqrt =
             Mathf.Sqrt(velocitySquared);
 
         float timeToPlatform =
             (jumpForce - sqrt) / gravity;
 
-        /*
-         * Также получаем время на нисходящей
-         * части траектории.
-         */
         float landingTime =
             (jumpForce + sqrt) / gravity;
 
-        /*
-         * Нас интересует нормальное приземление
-         * на платформу сверху, поэтому используем
-         * нисходящую часть траектории.
-         */
         float time =
             landingTime;
 
-        /*
-         * Сколько враг пролетит по X.
-         */
         float horizontalDistance =
             moveSpeed * time;
 
-        /*
-         * Допустимый диапазон приземления платформы.
-         */
         Bounds bounds =
             platform.bounds;
 
         float left = bounds.min.x + landingMargin;
         float right = bounds.max.x - landingMargin;
 
-        /*
-         * Необходимая точка по X.
-         */
         float predictedX =
             transform.position.x +
             direction *
             horizontalDistance;
 
-        /*
-         * Если предсказанная точка попадает
-         * внутрь платформы — прыжок возможен.
-         */
         bool insidePlatform =
             predictedX >= left &&
             predictedX <= right;
 
-        /*
-         * Иногда predictedX может немного не дойти
-         * до платформы, но сам Collider врага всё равно
-         * попадёт на неё.
-         *
-         * Поэтому используем небольшой запас.
-         */
         if (!insidePlatform)
         {
             float enemyWidth =
@@ -710,7 +616,6 @@ public class EnemyMelee : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // GroundCheck
         if (groundCheck != null)
         {
             Gizmos.DrawWireSphere(
@@ -727,7 +632,6 @@ public class EnemyMelee : MonoBehaviour
             direction = -1f;
         }
 
-        // ObstacleCheck
         if (obstacleCheck != null)
         {
             Gizmos.DrawLine(
@@ -739,7 +643,6 @@ public class EnemyMelee : MonoBehaviour
             );
         }
 
-        // Platform search area
         if (platformCheck != null)
         {
             float feetY = GetFeetY();

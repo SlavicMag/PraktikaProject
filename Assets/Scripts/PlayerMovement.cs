@@ -20,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
-    // Update is called once per frame
     void Update()                                                                                         
     { 
         float horizontalInput = Input.GetAxisRaw("Horizontal");
